@@ -15,7 +15,7 @@ body {
 }
 
 form {
-	width: 200mm;
+	width: 350mm;
 	height: 180mm;
 	border: none;
 	border-radius: 16px;
@@ -28,16 +28,7 @@ form {
 	overflow: hidden;
 }
 
-/* Add a subtle top accent */
-form::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 4px;
-	background: linear-gradient(90deg, #667eea, #764ba2);
-}
+
 
 .container {
 	display: flex;
@@ -50,86 +41,58 @@ form::before {
 	flex: 2;
 	display: flex;
 	flex-direction: column;
-	background: #f8fafc;
-	padding: 20px;
-	border-radius: 12px;
-	border: 1px solid #e2e8f0;
+	gap: 12px;
 }
 
 #neues-thema label {
 	font-weight: 600;
-	margin-bottom: 8px;
-	font-size: 14px;
-	color: #334155;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+	color: #333;
+	margin-bottom: 4px;
 }
 
-#titel {
-	width: 100%;
+#neues-thema input[type="text"],
+#neues-thema textarea {
 	padding: 12px 16px;
-	font-size: 14px;
-	margin-bottom: 16px;
-	border: 2px solid #e2e8f0;
+	border: 2px solid #e0e0e0;
 	border-radius: 8px;
-	transition: all 0.3s ease;
-	background: white;
-}
-
-#titel:focus {
-	outline: none;
-	border-color: #667eea;
-	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-#info {
-	width: 100%;
-	flex-grow: 1;
-	padding: 12px 16px;
-	font-size: 14px;
-	resize: vertical;
-	border: 2px solid #e2e8f0;
-	border-radius: 8px;
-	transition: all 0.3s ease;
-	background: white;
+	font-size: 16px;
+	transition: border-color 0.3s ease;
 	font-family: inherit;
+	resize: vertical;
 }
 
-#info:focus {
+#neues-thema input[type="text"]:focus,
+#neues-thema textarea:focus {
 	outline: none;
 	border-color: #667eea;
 	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#neues-thema textarea {
+	flex: 1;
+	min-height: 120px;
 }
 
 #themen {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	background: #f8fafc;
-	padding: 20px;
-	border-radius: 12px;
-	border: 1px solid #e2e8f0;
+	gap: 8px;
 }
 
 #themen label {
 	font-weight: 600;
-	margin-bottom: 8px;
-	font-size: 14px;
-	color: #334155;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
+	color: #333;
 }
 
 #themen-liste {
-	flex-grow: 1;
-	width: 100%;
+	flex: 1;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
 	padding: 8px;
 	font-size: 14px;
-	overflow-y: auto;
-	border: 2px solid #e2e8f0;
-	border-radius: 8px;
-	background: white;
-	transition: all 0.3s ease;
+	font-family: inherit;
+	transition: border-color 0.3s ease;
 }
 
 #themen-liste:focus {
@@ -139,131 +102,88 @@ form::before {
 }
 
 #themen-liste option {
-	padding: 8px;
-	border-bottom: 1px solid #f1f5f9;
+	padding: 4px 8px;
+	margin: 2px 0;
+	border-radius: 4px;
 }
 
-#themen-liste option:hover {
-	background-color: #f1f5f9;
+#themen-liste option:checked {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
 }
 
 #message-area {
-	height: 50px;
-	margin: 16px 0 12px 0;
-	font-size: 14px;
-	background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-	padding: 12px 16px;
-	border: 1px solid #cbd5e1;
-	border-radius: 8px;
-	color: #475569;
-	display: flex;
-	align-items: center;
-	font-style: italic;
+	min-height: 24px;
+	padding: 8px 0;
+	text-align: center;
+	font-weight: 500;
+	color: #2e7d32;
+	background: rgba(232, 245, 232, 0.8);
+	border-radius: 6px;
+	margin: 8px 0;
 }
 
 .buttons {
 	display: flex;
-	justify-content: space-between;
 	gap: 12px;
-	margin-top: 8px;
+	margin-top: 16px;
 }
 
-button {
+.buttons button {
+	flex: 1;
 	padding: 12px 20px;
-	font-weight: 600;
-	font-size: 13px;
 	border: none;
 	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 500;
 	cursor: pointer;
-	min-width: 105px;
 	transition: all 0.3s ease;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	position: relative;
-	overflow: hidden;
+	font-family: inherit;
 }
 
-/* Primary button (Speichern) */
-#speichern {
-	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+.buttons button:nth-child(1) {
+	/* Thema Löschen - Rot */
+	background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
 	color: white;
-	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-#speichern:hover {
+.buttons button:nth-child(1):hover {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+	box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
 }
 
-/* Secondary button (Fragen erstellen) */
-#fragen-erstellen-btn {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.buttons button:nth-child(2) {
+	/* Speichern - Grün */
+	background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
 	color: white;
-	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-#fragen-erstellen-btn:hover {
+.buttons button:nth-child(2):hover {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+	box-shadow: 0 8px 25px rgba(81, 207, 102, 0.3);
 }
 
-/* Neutral buttons */
-#neues-thema-btn {
-	background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+.buttons button:nth-child(3) {
+	/* Neues Theme - Lila */
+	background: linear-gradient(135deg, #9c88ff 0%, #7c3aed 100%);
 	color: white;
-	box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
 }
 
-#neues-thema-btn:hover {
+.buttons button:nth-child(3):hover {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 20px rgba(100, 116, 139, 0.4);
+	box-shadow: 0 8px 25px rgba(156, 136, 255, 0.3);
 }
 
-/* Danger button (Thema Löschen) */
-#thema-loeschen {
-	background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-	color: white;
-	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-#thema-loeschen:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-}
-
-button:active {
+.buttons button:active {
 	transform: translateY(0);
 }
 
-/* Button ripple effect */
-button::before {
-	content: '';
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 0;
-	height: 0;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.3);
-	transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
-	transform: translate(-50%, -50%);
-}
-
-button:active::before {
-	width: 300px;
-	height: 300px;
-}
-
-/* Responsive adjustments */
+/* Responsive Design */
 @media (max-width: 768px) {
-	body {
-		padding: 10px;
-	}
-	
 	form {
-		width: 100%;
+		width: 90vw;
 		height: auto;
-		min-height: 90vh;
+		min-height: 80vh;
 	}
 	
 	.container {
@@ -272,12 +192,7 @@ button:active::before {
 	}
 	
 	.buttons {
-		flex-wrap: wrap;
+		flex-direction: column;
 		gap: 8px;
-	}
-	
-	button {
-		flex: 1;
-		min-width: calc(50% - 4px);
 	}
 }

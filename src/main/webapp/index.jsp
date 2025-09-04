@@ -7,12 +7,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Examens Formular - Feste Größe mit vier Buttons</title>
+<title>Quizzle WebApp</title>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 <body>
 
 	<form id="exam-form" method="post" action="indexServlet" novalidate>
+		<input type="hidden" name="action" value="load" id="actionInput" />
+		
 		<div class="container">
 			<div id="neues-thema">
 				<label for="titel">Titel</label> 
@@ -24,16 +26,16 @@
 
 			<div id="themen">
 				<label>Themen</label> 
-				<select id="themen-liste" size="10" name="themen-liste">
+				<select id="themen-liste" size="10" name="themen-liste" onchange="document.getElementById('actionInput').value='autoload'; this.form.submit();">
 					<% 
 					ArrayList<ThemeDTO> themes = (ArrayList<ThemeDTO>) request.getAttribute("themes");
 					String selectedTheme = (String) request.getAttribute("selectedTheme");
 					if (themes != null && !themes.isEmpty()) {
 						for (ThemeDTO theme : themes) {
-							boolean isSelected = selectedTheme != null && selectedTheme.equals(theme.getTitle());
+							boolean isSelected = selectedTheme != null && selectedTheme.equals(theme.getThemeTitle());
 					%>
-						<option value="<%= theme.getTitle() %>" <%= isSelected ? "selected" : "" %>>
-							<%= theme.getTitle() %>
+						<option value="<%= theme.getThemeTitle() %>" <%= isSelected ? "selected" : "" %>>
+							<%= theme.getThemeTitle() %>
 							<% if (theme.getThemeDescription() != null && !theme.getThemeDescription().trim().isEmpty()) { %>
 								- <%= theme.getThemeDescription() %>
 							<% } %>
@@ -56,10 +58,9 @@
 		</div>
 
 		<div class="buttons">
-			<button type="submit" name="action" value="delete">Thema Löschen</button>
-			<button type="submit" name="action" value="save">Speichern</button>
-			<button type="submit" name="action" value="new">Neues Thema</button>
-			<button type="submit" name="action" value="load">Thema Laden</button>
+			<button type="submit" onclick="document.getElementById('actionInput').value='delete'">Thema Löschen</button>
+			<button type="submit" onclick="document.getElementById('actionInput').value='save'">Speichern</button>
+			<button type="submit" onclick="document.getElementById('actionInput').value='new'">Neues Thema</button>
 		</div>
 	</form>
 </body>
