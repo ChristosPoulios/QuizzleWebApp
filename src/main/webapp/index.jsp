@@ -37,7 +37,7 @@
 						<option value="<%= theme.getThemeTitle() %>" <%= isSelected ? "selected" : "" %>>
 							<%= theme.getThemeTitle() %>
 							<% if (theme.getThemeDescription() != null && !theme.getThemeDescription().trim().isEmpty()) { %>
-								- <%= theme.getThemeDescription() %>
+							- <%= theme.getThemeDescription() %>
 							<% } %>
 						</option>
 					<% 
