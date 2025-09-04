@@ -55,9 +55,6 @@ public class IndexServlet extends HttpServlet {
 			case "delete":
 				handleDelete(request, session);
 				break;
-			case "load":
-				handleLoad(request, session);
-				break;
 			case "autoload":
 				handleAutoLoad(request, session);
 				break;
@@ -84,6 +81,7 @@ public class IndexServlet extends HttpServlet {
 
 		if (titel == null || titel.trim().isEmpty()) {
 			session.setAttribute("msg", "Titel darf nicht leer sein!");
+			session.setAttribute("msgType", "error");
 			return;
 		}
 
@@ -94,11 +92,17 @@ public class IndexServlet extends HttpServlet {
 			String result = dataManager.saveTheme(theme);
 			if (result == null) {
 				session.setAttribute("msg", "Fehler beim Speichern: " + result);
+				session.setAttribute("msgType", "error");
 			} else {
 				session.setAttribute("msg", "Thema '" + titel + "' erfolgreich gespeichert!");
+				session.setAttribute("msgType", "success");
+				
+				request.setAttribute("currentTitel", titel.trim());
+				request.setAttribute("currentInfo", info != null ? info.trim() : "");
 			}
 		} catch (Exception e) {
 			session.setAttribute("msg", "Fehler beim Speichern: " + e.getMessage());
+			session.setAttribute("msgType", "error");
 		}
 	}
 
@@ -110,6 +114,7 @@ public class IndexServlet extends HttpServlet {
 
 		if (selectedTheme == null || selectedTheme.trim().isEmpty()) {
 			session.setAttribute("msg", "Bitte wählen Sie ein Thema zum Löschen aus!");
+			session.setAttribute("msgType", "error");
 			return;
 		}
 
@@ -129,50 +134,18 @@ public class IndexServlet extends HttpServlet {
 				String result = dataManager.deleteTheme(themeToDelete);
 				if (result == null) {
 					session.setAttribute("msg", "Fehler beim Löschen: " + result);
+					session.setAttribute("msgType", "error");
 				} else {
 					session.setAttribute("msg", "Thema '" + selectedTheme + "' erfolgreich gelöscht!");
+					session.setAttribute("msgType", "success");
 				}
 			} else {
 				session.setAttribute("msg", "Thema nicht gefunden!");
+				session.setAttribute("msgType", "error");
 			}
 		} catch (Exception e) {
 			session.setAttribute("msg", "Fehler beim Löschen: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * Handles loading a selected theme for editing
-	 */
-	private void handleLoad(HttpServletRequest request, HttpSession session) {
-		String selectedTheme = request.getParameter("themen-liste");
-
-		if (selectedTheme == null || selectedTheme.trim().isEmpty()) {
-			session.setAttribute("msg", "Bitte wählen Sie ein Thema zum Laden aus!");
-			return;
-		}
-
-		try {
-			DataManager dataManager = DataManager.getInstance();
-			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
-			ThemeDTO themeToLoad = null;
-
-			for (ThemeDTO theme : themes) {
-				if (selectedTheme.equals(theme.getThemeTitle())) {
-					themeToLoad = theme;
-					break;
-				}
-			}
-
-			if (themeToLoad != null) {
-				request.setAttribute("currentTitel", themeToLoad.getThemeTitle());
-				request.setAttribute("currentInfo", themeToLoad.getThemeDescription());
-				request.setAttribute("selectedTheme", selectedTheme);
-				session.setAttribute("msg", "Thema '" + selectedTheme + "' geladen!");
-			} else {
-				session.setAttribute("msg", "Thema nicht gefunden!");
-			}
-		} catch (Exception e) {
-			session.setAttribute("msg", "Fehler beim Laden: " + e.getMessage());
+			session.setAttribute("msgType", "error");
 		}
 	}
 
@@ -184,6 +157,7 @@ public class IndexServlet extends HttpServlet {
 		request.removeAttribute("currentInfo");
 		request.removeAttribute("selectedTheme");
 		session.setAttribute("msg", "Neues Thema - Formular geleert!");
+		session.setAttribute("msgType", "success");
 	}
 
 	/**
