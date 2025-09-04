@@ -1,0 +1,283 @@
+/* Modern CSS Reset and Base Styles */
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 20px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+form {
+	width: 200mm;
+	height: 180mm;
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+	display: flex;
+	flex-direction: column;
+	padding: 24px;
+	background: white;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Add a subtle top accent */
+form::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.container {
+	display: flex;
+	gap: 20px;
+	flex: 1;
+	margin-top: 8px;
+}
+
+#neues-thema {
+	flex: 2;
+	display: flex;
+	flex-direction: column;
+	background: #f8fafc;
+	padding: 20px;
+	border-radius: 12px;
+	border: 1px solid #e2e8f0;
+}
+
+#neues-thema label {
+	font-weight: 600;
+	margin-bottom: 8px;
+	font-size: 14px;
+	color: #334155;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+#titel {
+	width: 100%;
+	padding: 12px 16px;
+	font-size: 14px;
+	margin-bottom: 16px;
+	border: 2px solid #e2e8f0;
+	border-radius: 8px;
+	transition: all 0.3s ease;
+	background: white;
+}
+
+#titel:focus {
+	outline: none;
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#info {
+	width: 100%;
+	flex-grow: 1;
+	padding: 12px 16px;
+	font-size: 14px;
+	resize: vertical;
+	border: 2px solid #e2e8f0;
+	border-radius: 8px;
+	transition: all 0.3s ease;
+	background: white;
+	font-family: inherit;
+}
+
+#info:focus {
+	outline: none;
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#themen {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	background: #f8fafc;
+	padding: 20px;
+	border-radius: 12px;
+	border: 1px solid #e2e8f0;
+}
+
+#themen label {
+	font-weight: 600;
+	margin-bottom: 8px;
+	font-size: 14px;
+	color: #334155;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+#themen-liste {
+	flex-grow: 1;
+	width: 100%;
+	padding: 8px;
+	font-size: 14px;
+	overflow-y: auto;
+	border: 2px solid #e2e8f0;
+	border-radius: 8px;
+	background: white;
+	transition: all 0.3s ease;
+}
+
+#themen-liste:focus {
+	outline: none;
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#themen-liste option {
+	padding: 8px;
+	border-bottom: 1px solid #f1f5f9;
+}
+
+#themen-liste option:hover {
+	background-color: #f1f5f9;
+}
+
+#message-area {
+	height: 50px;
+	margin: 16px 0 12px 0;
+	font-size: 14px;
+	background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+	padding: 12px 16px;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	color: #475569;
+	display: flex;
+	align-items: center;
+	font-style: italic;
+}
+
+.buttons {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 8px;
+}
+
+button {
+	padding: 12px 20px;
+	font-weight: 600;
+	font-size: 13px;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	min-width: 105px;
+	transition: all 0.3s ease;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	position: relative;
+	overflow: hidden;
+}
+
+/* Primary button (Speichern) */
+#speichern {
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	color: white;
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+#speichern:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Secondary button (Fragen erstellen) */
+#fragen-erstellen-btn {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+#fragen-erstellen-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Neutral buttons */
+#neues-thema-btn {
+	background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+	color: white;
+	box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+#neues-thema-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(100, 116, 139, 0.4);
+}
+
+/* Danger button (Thema Löschen) */
+#thema-loeschen {
+	background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+	color: white;
+	box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+#thema-loeschen:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+button:active {
+	transform: translateY(0);
+}
+
+/* Button ripple effect */
+button::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.3);
+	transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+	transform: translate(-50%, -50%);
+}
+
+button:active::before {
+	width: 300px;
+	height: 300px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	body {
+		padding: 10px;
+	}
+	
+	form {
+		width: 100%;
+		height: auto;
+		min-height: 90vh;
+	}
+	
+	.container {
+		flex-direction: column;
+		gap: 16px;
+	}
+	
+	.buttons {
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	
+	button {
+		flex: 1;
+		min-width: calc(50% - 4px);
+	}
+}
