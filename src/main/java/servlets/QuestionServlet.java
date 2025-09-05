@@ -136,10 +136,55 @@ public class QuestionServlet extends HttpServlet {
 
 		try {
 			DataManager dataManager = DataManager.getInstance();
-			// Note: This would need to be implemented in DataManager
-			// For now, we'll simulate loading
-			session.setAttribute("msg", "Frage '" + selectedQuestion + "' geladen!");
-			session.setAttribute("msgType", "success");
+			
+			// Finde die Frage durch Durchsuchen aller Themen (wie im ursprünglichen Quizzle-Projekt)
+			QuestionDTO foundQuestion = null;
+			String foundThemeTitle = null;
+			
+			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
+			for (ThemeDTO theme : themes) {
+				ArrayList<QuestionDTO> questions = dataManager.getQuestionsFor(theme);
+				if (questions != null) {
+					for (QuestionDTO question : questions) {
+						if (selectedQuestion.equals(question.getQuestionTitle())) {
+							foundQuestion = question;
+							foundThemeTitle = theme.getThemeTitle();
+							break;
+						}
+					}
+					if (foundQuestion != null) break;
+				}
+			}
+			
+			if (foundQuestion != null) {
+				// Lade die Antworten (wie im ursprünglichen Projekt)
+				ArrayList<AnswerDTO> answers = dataManager.getAnswersFor(foundQuestion);
+				foundQuestion.setAnswers(answers);
+				
+				// Lade die Fragendaten in die Request-Attribute
+				request.setAttribute("currentTitel", foundQuestion.getQuestionTitle());
+				request.setAttribute("currentFrage", foundQuestion.getQuestionText());
+				request.setAttribute("currentThema", foundThemeTitle);
+				request.setAttribute("selectedTheme", foundThemeTitle);
+				request.setAttribute("selectedQuestionTitle", selectedQuestion); // Für die Auswahl in der Liste
+				
+				// Lade die Antworten in die Formularfelder
+				if (answers != null) {
+					for (int i = 0; i < answers.size() && i < 4; i++) {
+						AnswerDTO answer = answers.get(i);
+						request.setAttribute("antwort" + (i + 1), answer.getAnswerText());
+						if (answer.isCorrect()) {
+							request.setAttribute("richtig" + (i + 1), true);
+						}
+					}
+				}
+				
+				session.setAttribute("msg", "Frage '" + selectedQuestion + "' erfolgreich geladen!");
+				session.setAttribute("msgType", "success");
+			} else {
+				session.setAttribute("msg", "Frage '" + selectedQuestion + "' konnte nicht gefunden werden!");
+				session.setAttribute("msgType", "error");
+			}
 		} catch (Exception e) {
 			session.setAttribute("msg", "Fehler beim Laden: " + e.getMessage());
 			session.setAttribute("msgType", "error");

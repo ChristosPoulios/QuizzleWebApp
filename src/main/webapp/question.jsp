@@ -109,52 +109,55 @@
 					</div>
 
 					<!-- Fragenliste -->
-					<div class="questions-list" id="questions-view">
-						<%
-						ArrayList<QuestionDTO> questions = (ArrayList<QuestionDTO>) request.getAttribute("questions");
-						if (questions != null && !questions.isEmpty()) {
-							for (QuestionDTO question : questions) {
-						%>
-						<div class="question-item"
-							onclick="loadQuestion('<%=question.getQuestionTitle()%>')">
-							<%=question.getQuestionTitle()%>
-						</div>
-						<%
-						}
-						} else {
-						%>
-						<div class="no-questions">Keine Fragen für dieses Thema
-							vorhanden</div>
-						<%
-						}
-						%>
-					</div>
-
-					<!-- Themenliste (initial versteckt) -->
-					<div class="themes-list" id="themes-view" style="display: none;">
-						<%
-						if (themes != null && !themes.isEmpty()) {
-							for (ThemeDTO theme : themes) {
-						%>
-						<div class="theme-item"
-							onclick="selectTheme('<%=theme.getThemeTitle()%>')">
-							<div class="theme-title"><%=theme.getThemeTitle()%></div>
+					<div id="questions-view">
+						<select id="questions-liste" size="10" onchange="loadSelectedQuestion()">
 							<%
-							if (theme.getThemeDescription() != null && !theme.getThemeDescription().trim().isEmpty()) {
+							ArrayList<QuestionDTO> questions = (ArrayList<QuestionDTO>) request.getAttribute("questions");
+							String selectedQuestionTitle = (String) request.getAttribute("selectedQuestionTitle");
+							if (questions != null && !questions.isEmpty()) {
+								for (QuestionDTO question : questions) {
+									boolean isSelected = selectedQuestionTitle != null && selectedQuestionTitle.equals(question.getQuestionTitle());
 							%>
-							<div class="theme-description"><%=theme.getThemeDescription()%></div>
+							<option value="<%=question.getQuestionTitle()%>" <%=isSelected ? "selected" : ""%>>
+								<%=question.getQuestionTitle()%>
+							</option>
+							<%
+								}
+							} else {
+							%>
+							<option disabled>Keine Fragen für dieses Thema vorhanden</option>
 							<%
 							}
 							%>
-						</div>
-						<%
-						}
-						} else {
-						%>
-						<div class="no-themes">Keine Themen vorhanden</div>
-						<%
-						}
-						%>
+						</select>
+					</div>
+
+					<!-- Themenliste (initial versteckt) -->
+					<div id="themes-view" style="display: none;">
+						<select id="themes-liste" size="10" onchange="selectSelectedTheme()">
+							<%
+							if (themes != null && !themes.isEmpty()) {
+								for (ThemeDTO theme : themes) {
+							%>
+							<option value="<%=theme.getThemeTitle()%>">
+								<%=theme.getThemeTitle()%>
+								<%
+								if (theme.getThemeDescription() != null && !theme.getThemeDescription().trim().isEmpty()) {
+								%>
+								- <%=theme.getThemeDescription()%>
+								<%
+								}
+								%>
+							</option>
+							<%
+								}
+							} else {
+							%>
+							<option disabled>Keine Themen vorhanden</option>
+							<%
+							}
+							%>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -256,6 +259,26 @@
 			toggleButton.innerHTML = 'Themenliste';
 
 			document.getElementById('question-form').submit();
+		}
+
+		function loadSelectedQuestion() {
+			var selectElement = document.getElementById('questions-liste');
+			if (selectElement && selectElement.selectedIndex >= 0) {
+				var questionTitle = selectElement.options[selectElement.selectedIndex].value;
+				if (questionTitle && questionTitle.trim() !== '') {
+					loadQuestion(questionTitle);
+				}
+			}
+		}
+
+		function selectSelectedTheme() {
+			var selectElement = document.getElementById('themes-liste');
+			if (selectElement && selectElement.selectedIndex >= 0) {
+				var themeTitle = selectElement.options[selectElement.selectedIndex].value;
+				if (themeTitle && themeTitle.trim() !== '') {
+					selectTheme(themeTitle);
+				}
+			}
 		}
 	</script>
 </body>
