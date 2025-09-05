@@ -1,0 +1,52 @@
+/* Base Styles and Reset */
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 80px 20px 20px 20px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+form {
+	width: 350mm;
+	min-height: 180mm;
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+	display: flex;
+	flex-direction: column;
+	padding: 24px;
+	background: linear-gradient(135deg, #f0f4ff 0%, #e6eeff 100%);
+	position: relative;
+}
+
+#message-area {
+	min-height: 24px;
+	padding: 8px 0;
+	text-align: center;
+	font-weight: 500;
+	color: #666;
+	background: rgba(248, 249, 250, 0.8);
+	border-radius: 6px;
+	margin: 8px 0;
+	border: 1px solid #dee2e6;
+}
+
+#message-area.success {
+	color: #2e7d32;
+	background: rgba(232, 245, 232, 0.8);
+	border: 1px solid #4caf50;
+}
+
+#message-area.error {
+	color: #d32f2f;
+	background: rgba(255, 235, 238, 0.8);
+	border: 1px solid #f44336;
+}

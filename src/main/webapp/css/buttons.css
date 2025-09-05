@@ -1,0 +1,82 @@
+/* Button Styles */
+.buttons {
+	display: flex;
+	gap: 12px;
+	margin-top: 16px;
+}
+
+.buttons button {
+	flex: 1;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-family: inherit;
+}
+
+/* Delete Button - Red */
+.buttons button:nth-child(1), .btn-delete {
+	background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+	color: white;
+}
+
+.buttons button:nth-child(1):hover, .btn-delete:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+/* Save Button - Green */
+.buttons button:nth-child(2), .btn-save {
+	background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+	color: white;
+}
+
+.buttons button:nth-child(2):hover, .btn-save:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(81, 207, 102, 0.3);
+}
+
+/* New Button - Purple */
+.buttons button:nth-child(3), .btn-new {
+	background: linear-gradient(135deg, #9c88ff 0%, #7c3aed 100%);
+	color: white;
+}
+
+.buttons button:nth-child(3):hover, .btn-new:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(156, 136, 255, 0.3);
+}
+
+/* Primary Button */
+.btn-primary {
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: white;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-family: inherit;
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+	.buttons {
+		flex-direction: column;
+		gap: 8px;
+	}
+	
+	.buttons button {
+		margin: 0;
+	}
+}
