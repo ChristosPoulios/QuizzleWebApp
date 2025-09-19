@@ -18,7 +18,7 @@
 		<div class="tabs">
 			<a href="indexServlet" class="tab">Quizthemen</a> <a
 				href="questionServlet" class="tab active">Quizfragen</a> <a
-				href="quizServlet" class="tab">Quiz</a> <a href="#" class="tab">Statistik</a>
+				href="quizServlet" class="tab">Quiz</a> <a href="statisticsServlet" class="tab">Statistik</a>
 		</div>
 	</div>
 
@@ -204,8 +204,16 @@
 		}
 
 		function deleteQuestion() {
-			if (confirm('Sind Sie sicher, dass Sie diese Frage löschen möchten?')) {
+			// Prüfe, ob eine Frage im Titel-Feld steht (bedeutet eine Frage ist geladen)
+			var currentTitle = document.getElementById('titel').value;
+			if (!currentTitle || currentTitle.trim() === '') {
+				alert('Bitte wählen Sie zuerst eine Frage aus der Liste aus.');
+				return;
+			}
+			
+			if (confirm('Sind Sie sicher, dass Sie die Frage "' + currentTitle + '" löschen möchten?')) {
 				document.getElementById('actionInput').value = 'delete';
+				document.querySelector('input[name="selectedQuestion"]').value = currentTitle;
 				document.getElementById('question-form').submit();
 			}
 		}

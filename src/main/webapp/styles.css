@@ -5,6 +5,8 @@
 @import url('css/themes.css');
 @import url('css/questions.css');
 @import url('css/buttons.css');
+@import url('css/quiz.css');
+@import url('css/statistics.css');
 
 /* Responsive adjustments for all pages */
 @media (max-width: 768px) {
@@ -44,10 +46,5 @@
 	
 	#neues-thema, #themen {
 		min-width: auto;
-	}
-	
-	.left-section, .right-section {
-		min-width: auto;
-		max-width: none;
 	}
 }

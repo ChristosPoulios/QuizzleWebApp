@@ -17,7 +17,7 @@
 			<a href="indexServlet" class="tab active">Quizthemen</a>
 			<a href="questionServlet" class="tab">Quizfragen</a>
 			<a href="quizServlet" class="tab">Quiz</a>
-			<a href="#" class="tab">Statistik</a>
+			<a href="statisticsServlet" class="tab">Statistik</a>
 		</div>
 	</div>
 
