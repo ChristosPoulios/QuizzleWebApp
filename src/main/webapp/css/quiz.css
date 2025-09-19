@@ -65,6 +65,19 @@
 	border-color: #007bff;
 }
 
+/* Styling für richtige und falsche Antworten */
+.answer-option.correct {
+	background: #d4edda;
+	border: 2px solid #28a745;
+	color: #155724;
+}
+
+.answer-option.incorrect {
+	background: #f8d7da;
+	border: 2px solid #dc3545;
+	color: #721c24;
+}
+
 .answer-option input[type="radio"] {
 	margin-right: 10px;
 }
