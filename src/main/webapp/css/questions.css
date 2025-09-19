@@ -1,24 +1,24 @@
 /* Question Management Page Styles */
 .question-container {
 	display: flex;
-	gap: 30px; 
-	max-width: 1400px; 
+	gap: 30px;
+	max-width: 1400px;
 	margin: 10px auto;
-	padding: 0 30px; 
+	padding: 0 30px;
 	min-height: auto;
 	width: 100%;
 }
 
 .left-section {
 	flex: 1;
-	min-width: 600px; 
-	max-width: 700px; 
+	min-width: 600px;
+	max-width: 700px;
 }
 
 .right-section {
 	flex: 1;
-	min-width: 500px; 
-	max-width: 600px; 
+	min-width: 500px;
+	max-width: 600px;
 }
 
 /* Question Input */
@@ -77,14 +77,14 @@
 }
 
 .answers-section h3 {
-	margin: 0; 
+	margin: 0;
 	color: #333;
 	font-size: 16px;
 }
 
 .answer-header {
 	color: #333;
-	font-size: 16px; 
+	font-size: 16px;
 	font-weight: 600;
 }
 
@@ -141,7 +141,6 @@
 	font-size: 16px;
 }
 
-/* Questions List Styling - FINAL VERSION with highest specificity */
 .question-container .right-section #questions-view {
 	flex: 1;
 	display: flex;
@@ -164,24 +163,26 @@
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.question-container .right-section #questions-view #questions-liste:focus {
+.question-container .right-section #questions-view #questions-liste:focus
+	{
 	outline: none;
 	border-color: #667eea;
 	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.question-container .right-section #questions-view #questions-liste option {
+.question-container .right-section #questions-view #questions-liste option
+	{
 	padding: 4px 8px;
 	margin: 2px 0;
 	border-radius: 4px;
 }
 
-.question-container .right-section #questions-view #questions-liste option:checked {
+.question-container .right-section #questions-view #questions-liste option:checked
+	{
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: white;
 }
 
-/* Themes List Styling - FINAL VERSION with highest specificity */
 .question-container .right-section #themes-view {
 	flex: 1;
 	display: flex;
@@ -216,12 +217,11 @@
 	border-radius: 4px;
 }
 
-.question-container .right-section #themes-view #themes-liste option:checked {
+.question-container .right-section #themes-view #themes-liste option:checked
+	{
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	color: white;
 }
-
-/* Remove old conflicting rules - completely cleaned up */
 
 .no-questions, .no-themes {
 	padding: 20px;

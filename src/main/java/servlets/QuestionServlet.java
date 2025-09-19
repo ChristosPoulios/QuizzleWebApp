@@ -16,10 +16,10 @@ import quizlogic.dto.QuestionDTO;
 import quizlogic.dto.AnswerDTO;
 
 /**
- * Servlet implementation class QuestionServlet
- * Handles CRUD operations for quiz questions in the web application.
+ * Servlet implementation class QuestionServlet Handles CRUD operations for quiz
+ * questions in the web application.
  */
-@WebServlet("/questionServlet")
+@WebServlet("/question")
 public class QuestionServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -87,8 +87,7 @@ public class QuestionServlet extends HttpServlet {
 
 		try {
 			DataManager dataManager = DataManager.getInstance();
-			
-			// Finde das ThemeDTO-Objekt für das ausgewählte Thema
+
 			ThemeDTO targetTheme = null;
 			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 			for (ThemeDTO theme : themes) {
@@ -97,13 +96,13 @@ public class QuestionServlet extends HttpServlet {
 					break;
 				}
 			}
-			
+
 			if (targetTheme == null) {
 				session.setAttribute("msg", "Das ausgewählte Thema konnte nicht gefunden werden!");
 				session.setAttribute("msgType", "error");
 				return;
 			}
-			
+
 			QuestionDTO question = new QuestionDTO();
 			question.setQuestionTitle(titel.trim());
 			question.setQuestionText(frage.trim());
@@ -112,7 +111,7 @@ public class QuestionServlet extends HttpServlet {
 			for (int i = 1; i <= 4; i++) {
 				String antwortText = request.getParameter("antwort" + i);
 				boolean isCorrect = request.getParameter("richtig" + i) != null;
-				
+
 				if (antwortText != null && !antwortText.trim().isEmpty()) {
 					AnswerDTO answer = new AnswerDTO();
 					answer.setAnswerText(antwortText.trim());
@@ -120,23 +119,20 @@ public class QuestionServlet extends HttpServlet {
 					answers.add(answer);
 				}
 			}
-			
+
 			question.setAnswers(answers);
 
-			// Verwende die saveQuestion Methode mit Thema-Parameter
 			String result = dataManager.saveQuestion(question, targetTheme);
 			if (result != null && result.contains("successfully")) {
-				// Setze die gespeicherte Frage als aktuell bearbeitete Frage
 				session.setAttribute("currentEditingQuestion", titel.trim());
-				
+
 				session.setAttribute("msg", "Frage '" + titel + "' erfolgreich gespeichert!");
 				session.setAttribute("msgType", "success");
 
-				// Behalte die Daten im Formular nach erfolgreichem Speichern
 				request.setAttribute("currentThema", selectedTheme);
 				request.setAttribute("currentTitel", titel);
 				request.setAttribute("currentFrage", frage);
-				request.setAttribute("selectedQuestionTitle", titel); // Markiere die gespeicherte Frage in der Liste
+				request.setAttribute("selectedQuestionTitle", titel);
 				for (int i = 1; i <= 4; i++) {
 					request.setAttribute("antwort" + i, request.getParameter("antwort" + i));
 					if (request.getParameter("richtig" + i) != null) {
@@ -144,7 +140,8 @@ public class QuestionServlet extends HttpServlet {
 					}
 				}
 			} else {
-				session.setAttribute("msg", "Fehler beim Speichern: " + (result != null ? result : "Unbekannter Fehler"));
+				session.setAttribute("msg",
+						"Fehler beim Speichern: " + (result != null ? result : "Unbekannter Fehler"));
 				session.setAttribute("msgType", "error");
 			}
 		} catch (Exception e) {
@@ -155,7 +152,7 @@ public class QuestionServlet extends HttpServlet {
 
 	private void handleLoadQuestion(HttpServletRequest request, HttpSession session) {
 		String selectedQuestion = request.getParameter("selectedQuestion");
-		
+
 		if (selectedQuestion == null || selectedQuestion.trim().isEmpty()) {
 			session.setAttribute("msg", "Bitte wählen Sie eine Frage zum Laden aus!");
 			session.setAttribute("msgType", "error");
@@ -164,11 +161,10 @@ public class QuestionServlet extends HttpServlet {
 
 		try {
 			DataManager dataManager = DataManager.getInstance();
-			
-			// Finde die Frage durch Durchsuchen aller Themen (wie im ursprünglichen Quizzle-Projekt)
+
 			QuestionDTO foundQuestion = null;
 			String foundThemeTitle = null;
-			
+
 			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 			for (ThemeDTO theme : themes) {
 				ArrayList<QuestionDTO> questions = dataManager.getQuestionsFor(theme);
@@ -180,23 +176,21 @@ public class QuestionServlet extends HttpServlet {
 							break;
 						}
 					}
-					if (foundQuestion != null) break;
+					if (foundQuestion != null)
+						break;
 				}
 			}
-			
+
 			if (foundQuestion != null) {
-				// Lade die Antworten (wie im ursprünglichen Projekt)
 				ArrayList<AnswerDTO> answers = dataManager.getAnswersFor(foundQuestion);
 				foundQuestion.setAnswers(answers);
-				
-				// Lade die Fragendaten in die Request-Attribute (wie onQuestionSelected im Original)
+
 				request.setAttribute("currentTitel", foundQuestion.getQuestionTitle());
 				request.setAttribute("currentFrage", foundQuestion.getQuestionText());
 				request.setAttribute("currentThema", foundThemeTitle);
 				request.setAttribute("selectedTheme", foundThemeTitle);
 				request.setAttribute("selectedQuestionTitle", selectedQuestion);
-				
-				// Lade die Antworten in die Formularfelder
+
 				if (answers != null) {
 					for (int i = 0; i < answers.size() && i < 4; i++) {
 						AnswerDTO answer = answers.get(i);
@@ -206,7 +200,7 @@ public class QuestionServlet extends HttpServlet {
 						}
 					}
 				}
-				
+
 				session.setAttribute("msg", "Frage '" + selectedQuestion + "' erfolgreich geladen!");
 				session.setAttribute("msgType", "success");
 			} else {
@@ -221,7 +215,7 @@ public class QuestionServlet extends HttpServlet {
 
 	private void handleDeleteQuestion(HttpServletRequest request, HttpSession session) {
 		String selectedQuestion = request.getParameter("selectedQuestion");
-		
+
 		if (selectedQuestion == null || selectedQuestion.trim().isEmpty()) {
 			session.setAttribute("msg", "Bitte wählen Sie eine Frage zum Löschen aus!");
 			session.setAttribute("msgType", "error");
@@ -230,10 +224,9 @@ public class QuestionServlet extends HttpServlet {
 
 		try {
 			DataManager dataManager = DataManager.getInstance();
-			
-			// Finde die zu löschende Frage durch Durchsuchen aller Themen
+
 			QuestionDTO questionToDelete = null;
-			
+
 			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 			for (ThemeDTO theme : themes) {
 				ArrayList<QuestionDTO> questions = dataManager.getQuestionsFor(theme);
@@ -244,17 +237,17 @@ public class QuestionServlet extends HttpServlet {
 							break;
 						}
 					}
-					if (questionToDelete != null) break;
+					if (questionToDelete != null)
+						break;
 				}
 			}
-			
+
 			if (questionToDelete != null) {
 				String result = dataManager.deleteQuestion(questionToDelete);
 				if (result != null && result.contains("successfully")) {
 					session.setAttribute("msg", "Frage '" + selectedQuestion + "' erfolgreich gelöscht!");
 					session.setAttribute("msgType", "success");
-					
-					// Formular leeren nach erfolgreichem Löschen
+
 					request.setAttribute("currentTitel", "");
 					request.setAttribute("currentFrage", "");
 					request.setAttribute("antwort1", "");
@@ -262,7 +255,8 @@ public class QuestionServlet extends HttpServlet {
 					request.setAttribute("antwort3", "");
 					request.setAttribute("antwort4", "");
 				} else {
-					session.setAttribute("msg", "Fehler beim Löschen: " + (result != null ? result : "Unbekannter Fehler"));
+					session.setAttribute("msg",
+							"Fehler beim Löschen: " + (result != null ? result : "Unbekannter Fehler"));
 					session.setAttribute("msgType", "error");
 				}
 			} else {
@@ -277,15 +271,14 @@ public class QuestionServlet extends HttpServlet {
 
 	private void handleThemeSelection(HttpServletRequest request, HttpSession session) {
 		String selectedTheme = request.getParameter("selectedTheme");
-		
+
 		try {
 			DataManager dataManager = DataManager.getInstance();
-			
+
 			if (selectedTheme != null && !selectedTheme.trim().isEmpty()) {
 				request.setAttribute("selectedTheme", selectedTheme);
 				request.setAttribute("currentThema", selectedTheme);
-				
-				// Formular leeren bei Themenwechsel (wie im originalen Quizzle-Projekt)
+
 				request.setAttribute("currentTitel", "");
 				request.setAttribute("currentFrage", "");
 				request.setAttribute("antwort1", "");
@@ -297,7 +290,7 @@ public class QuestionServlet extends HttpServlet {
 				request.setAttribute("richtig3", null);
 				request.setAttribute("richtig4", null);
 				request.setAttribute("selectedQuestionTitle", "");
-				
+
 				ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 				for (ThemeDTO theme : themes) {
 					if (selectedTheme.equals(theme.getThemeTitle())) {
@@ -309,8 +302,7 @@ public class QuestionServlet extends HttpServlet {
 			} else {
 				request.setAttribute("selectedTheme", "");
 				request.setAttribute("currentThema", "Alle Themen");
-				
-				// Formular auch leeren bei "Alle Themen"
+
 				request.setAttribute("currentTitel", "");
 				request.setAttribute("currentFrage", "");
 				request.setAttribute("antwort1", "");
@@ -322,17 +314,17 @@ public class QuestionServlet extends HttpServlet {
 				request.setAttribute("richtig3", null);
 				request.setAttribute("richtig4", null);
 				request.setAttribute("selectedQuestionTitle", "");
-				
+
 				ArrayList<QuestionDTO> allQuestions = new ArrayList<>();
 				ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
-				
+
 				for (ThemeDTO theme : themes) {
 					ArrayList<QuestionDTO> themeQuestions = dataManager.getQuestionsFor(theme);
 					if (themeQuestions != null) {
 						allQuestions.addAll(themeQuestions);
 					}
 				}
-				
+
 				request.setAttribute("questions", allQuestions);
 			}
 		} catch (Exception e) {
@@ -349,11 +341,10 @@ public class QuestionServlet extends HttpServlet {
 
 			String selectedTheme = request.getParameter("selectedTheme");
 			HttpSession session = request.getSession();
-			
-			// Überprüfe ob ein Themenwechsel stattgefunden hat
+
 			String previousTheme = (String) session.getAttribute("lastSelectedTheme");
 			boolean themeChanged = false;
-			
+
 			if (selectedTheme != null && !selectedTheme.trim().isEmpty()) {
 				themeChanged = !selectedTheme.equals(previousTheme);
 				session.setAttribute("lastSelectedTheme", selectedTheme);
@@ -361,12 +352,11 @@ public class QuestionServlet extends HttpServlet {
 				themeChanged = previousTheme != null && !previousTheme.equals("");
 				session.setAttribute("lastSelectedTheme", "");
 			}
-			
+
 			if (selectedTheme != null && !selectedTheme.trim().isEmpty()) {
 				request.setAttribute("selectedTheme", selectedTheme);
 				request.setAttribute("currentThema", selectedTheme);
-				
-				// Formular leeren bei Themenwechsel (wie im originalen Quizzle-Projekt)
+
 				if (themeChanged) {
 					request.setAttribute("currentTitel", "");
 					request.setAttribute("currentFrage", "");
@@ -380,7 +370,7 @@ public class QuestionServlet extends HttpServlet {
 					request.setAttribute("richtig4", null);
 					request.setAttribute("selectedQuestionTitle", "");
 				}
-				
+
 				for (ThemeDTO theme : themes) {
 					if (selectedTheme.equals(theme.getThemeTitle())) {
 						ArrayList<QuestionDTO> questions = dataManager.getQuestionsFor(theme);
@@ -391,8 +381,7 @@ public class QuestionServlet extends HttpServlet {
 			} else {
 				request.setAttribute("selectedTheme", "");
 				request.setAttribute("currentThema", "Alle Themen");
-				
-				// Formular auch leeren bei "Alle Themen"
+
 				if (themeChanged) {
 					request.setAttribute("currentTitel", "");
 					request.setAttribute("currentFrage", "");
@@ -406,16 +395,16 @@ public class QuestionServlet extends HttpServlet {
 					request.setAttribute("richtig4", null);
 					request.setAttribute("selectedQuestionTitle", "");
 				}
-				
+
 				ArrayList<QuestionDTO> allQuestions = new ArrayList<>();
-				
+
 				for (ThemeDTO theme : themes) {
 					ArrayList<QuestionDTO> themeQuestions = dataManager.getQuestionsFor(theme);
 					if (themeQuestions != null) {
 						allQuestions.addAll(themeQuestions);
 					}
 				}
-				
+
 				request.setAttribute("questions", allQuestions);
 			}
 		} catch (Exception e) {

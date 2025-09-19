@@ -17,14 +17,13 @@
 	<!-- Navigation Tabs -->
 	<div class="tab-container">
 		<div class="tabs">
-			<a href="indexServlet" class="tab">Quizthemen</a> <a
-				href="questionServlet" class="tab">Quizfragen</a> <a
-				href="quizServlet" class="tab active">Quiz</a> <a
-				href="statisticsServlet" class="tab">Statistik</a>
+			<a href="index" class="tab">Home</a> <a href="theme" class="tab">Quizthemen</a>
+			<a href="question" class="tab">Quizfragen</a> <a href="quiz"
+				class="tab active">Quiz</a> <a href="statistics" class="tab">Statistik</a>
 		</div>
 	</div>
 
-	<form id="quiz-form" method="post" action="quizServlet" novalidate>
+	<form id="quiz-form" method="post" action="quiz" novalidate>
 		<input type="hidden" name="action" value="" id="actionInput" /> <input
 			type="hidden" name="selectedAnswer" value="" id="selectedAnswerInput" />
 
@@ -43,12 +42,24 @@
 						<%
 						List<AnswerDTO> answers = currentQuestion.getAnswers();
 						if (answers != null && !answers.isEmpty()) {
+
+							int correctCount = 0;
+							for (AnswerDTO answer : answers) {
+								if (answer.isCorrect()) {
+							correctCount++;
+								}
+							}
+							boolean isMultipleChoice = correctCount > 1;
+							String inputType = isMultipleChoice ? "checkbox" : "radio";
+							String inputName = isMultipleChoice ? "answers" : "answer";
+
 							for (int i = 0; i < answers.size(); i++) {
 								AnswerDTO answer = answers.get(i);
 						%>
 						<div class="answer-option" data-correct="<%=answer.isCorrect()%>">
-							<input type="radio" name="answer" value="<%=answer.getId()%>"
-								id="answer<%=i%>" /> <label for="answer<%=i%>"><%=answer.getAnswerText()%></label>
+							<input type="<%=inputType%>" name="<%=inputName%>"
+								value="<%=answer.getId()%>" id="answer<%=i%>" /> <label
+								for="answer<%=i%>"><%=answer.getAnswerText()%></label>
 						</div>
 						<%
 						}
@@ -134,7 +145,7 @@
 			%>
 		</div>
 
-		<!-- Quiz Controls - moved below message area -->
+		<!-- Quiz Controls -->
 		<div class="quiz-controls">
 			<button type="button" onclick="showAnswer()" id="showAnswerBtn">Antwort
 				zeigen</button>
@@ -148,45 +159,76 @@
 	</form>
 
 	<script>
-		// Status aus sessionStorage laden oder initialisieren
 		var answerSubmitted = sessionStorage.getItem('answerSubmitted') === 'true';
 		var answerShown = sessionStorage.getItem('answerShown') === 'true';
 
-		// Bei Seitenload prüfen ob Antwortoptionen deaktiviert sein sollen
-		document.addEventListener('DOMContentLoaded', function() {
-			if (answerSubmitted || answerShown) {
-				// Antwortoptionen deaktivieren
-				var answerInputs = document.querySelectorAll('input[name="answer"]');
-				answerInputs.forEach(function(input) {
-					input.disabled = true;
-					input.style.pointerEvents = 'none';
+		document
+				.addEventListener(
+						'DOMContentLoaded',
+						function() {
+							if (answerSubmitted || answerShown) {
+
+								var answerInputs = document
+										.querySelectorAll('input[name="answer"], input[name="answers"]');
+								answerInputs.forEach(function(input) {
+									input.disabled = true;
+									input.style.pointerEvents = 'none';
+								});
+
+								document.getElementById('showAnswerBtn').disabled = true;
+								document.getElementById('submitAnswerBtn').disabled = true;
+
+								if (answerShown || answerSubmitted) {
+									colorizeAnswers();
+								}
+							}
+						});
+
+		function isMultipleChoiceQuestion() {
+			return document.querySelector('input[name="answers"]') !== null;
+		}
+
+		function getSelectedAnswers() {
+			if (isMultipleChoiceQuestion()) {
+				var selectedCheckboxes = document
+						.querySelectorAll('input[name="answers"]:checked');
+				return Array.from(selectedCheckboxes).map(function(input) {
+					return input.value;
 				});
-
-				// Buttons deaktivieren
-				document.getElementById('showAnswerBtn').disabled = true;
-				document.getElementById('submitAnswerBtn').disabled = true;
-
-				// Antworten einfärben falls sie bereits angezeigt wurden
-				if (answerShown || answerSubmitted) {
-					colorizeAnswers();
-				}
+			} else {
+				var selectedRadio = document
+						.querySelector('input[name="answer"]:checked');
+				return selectedRadio ? [ selectedRadio.value ] : [];
 			}
-		});
+		}
+
+		function validateAnswerSelection() {
+			var selectedAnswers = getSelectedAnswers();
+			if (selectedAnswers.length === 0) {
+				if (isMultipleChoiceQuestion()) {
+					alert('Bitte wählen Sie mindestens eine Antwort aus!');
+				} else {
+					alert('Bitte wählen Sie eine Antwort aus!');
+				}
+				return false;
+			}
+			return true;
+		}
 
 		function colorizeAnswers() {
 			var answerOptions = document.querySelectorAll('.answer-option');
-			var selectedAnswerId = sessionStorage.getItem('selectedAnswerId');
-			
+			var selectedAnswerIds = JSON.parse(sessionStorage
+					.getItem('selectedAnswerIds')
+					|| '[]');
+
 			answerOptions.forEach(function(option) {
 				var isCorrect = option.getAttribute('data-correct') === 'true';
-				var input = option.querySelector('input[type="radio"]');
-				var isSelected = selectedAnswerId && input.value === selectedAnswerId;
-				
+				var input = option.querySelector('input');
+				var isSelected = selectedAnswerIds.includes(input.value);
+
 				if (isCorrect) {
-					// Richtige Antwort immer grün markieren
 					option.classList.add('correct');
 				} else if (isSelected) {
-					// Falsch gewählte Antwort rot markieren
 					option.classList.add('incorrect');
 				}
 			});
@@ -194,65 +236,62 @@
 
 		function submitAnswer() {
 			if (answerSubmitted || answerShown) {
-				return; // Verhindert mehrfache Ausführung
-			}
-
-			var selectedAnswer = document
-					.querySelector('input[name="answer"]:checked');
-			if (!selectedAnswer) {
-				alert('Bitte wählen Sie eine Antwort aus!');
 				return;
 			}
 
+			if (!validateAnswerSelection()) {
+				return;
+			}
+
+			var selectedAnswers = getSelectedAnswers();
+
 			answerSubmitted = true;
 			sessionStorage.setItem('answerSubmitted', 'true');
-			sessionStorage.setItem('selectedAnswerId', selectedAnswer.value);
+			sessionStorage.setItem('selectedAnswerIds', JSON
+					.stringify(selectedAnswers));
 
-			// Antwortoptionen permanent deaktivieren
-			var answerInputs = document.querySelectorAll('input[name="answer"]');
+			var answerInputs = document
+					.querySelectorAll('input[name="answer"], input[name="answers"]');
 			answerInputs.forEach(function(input) {
 				input.disabled = true;
 				input.style.pointerEvents = 'none';
 			});
 
-			// Buttons deaktivieren
 			document.getElementById('showAnswerBtn').disabled = true;
 			document.getElementById('submitAnswerBtn').disabled = true;
 
-			// Antworten einfärben
 			colorizeAnswers();
 
-			document.getElementById('selectedAnswerInput').value = selectedAnswer.value;
+			document.getElementById('selectedAnswerInput').value = selectedAnswers
+					.join(',');
 			document.getElementById('actionInput').value = 'submitAnswer';
 			document.getElementById('quiz-form').submit();
 		}
 
 		function showAnswer() {
 			if (answerSubmitted || answerShown) {
-				return; // Verhindert mehrfache Ausführung
+				return;
 			}
 
 			answerShown = true;
 			sessionStorage.setItem('answerShown', 'true');
-			
-			// Speichere auch die ausgewählte Antwort falls vorhanden
-			var selectedAnswer = document.querySelector('input[name="answer"]:checked');
-			if (selectedAnswer) {
-				sessionStorage.setItem('selectedAnswerId', selectedAnswer.value);
+
+			var selectedAnswers = getSelectedAnswers();
+			if (selectedAnswers.length > 0) {
+				sessionStorage.setItem('selectedAnswerIds', JSON
+						.stringify(selectedAnswers));
 			}
 
-			// Antwortoptionen permanent deaktivieren
-			var answerInputs = document.querySelectorAll('input[name="answer"]');
+			var answerInputs = document
+					.querySelectorAll('input[name="answer"], input[name="answers"]');
 			answerInputs.forEach(function(input) {
 				input.disabled = true;
 				input.style.pointerEvents = 'none';
 			});
 
-			// Buttons deaktivieren
 			document.getElementById('showAnswerBtn').disabled = true;
 			document.getElementById('submitAnswerBtn').disabled = true;
 
-			// Antworten einfärben
 			colorizeAnswers();
 
 			document.getElementById('actionInput').value = 'showAnswer';
@@ -260,22 +299,20 @@
 		}
 
 		function nextQuestion() {
-			// Status für neue Frage zurücksetzen
 			sessionStorage.removeItem('answerSubmitted');
 			sessionStorage.removeItem('answerShown');
-			sessionStorage.removeItem('selectedAnswerId');
-			
+			sessionStorage.removeItem('selectedAnswerIds');
+
 			document.getElementById('actionInput').value = 'nextQuestion';
 			document.getElementById('quiz-form').submit();
 		}
 
 		function newQuiz() {
 			if (confirm('Möchten Sie wirklich ein neues Quiz starten? Der aktuelle Fortschritt geht verloren.')) {
-				// Status für neues Quiz zurücksetzen
 				sessionStorage.removeItem('answerSubmitted');
 				sessionStorage.removeItem('answerShown');
-				sessionStorage.removeItem('selectedAnswerId');
-				
+				sessionStorage.removeItem('selectedAnswerIds');
+
 				document.getElementById('actionInput').value = 'newQuiz';
 				document.getElementById('quiz-form').submit();
 			}

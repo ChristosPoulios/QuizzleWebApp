@@ -70,12 +70,11 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.buttons {
 		flex-direction: column;
 		gap: 8px;
 	}
-	
 	.buttons button {
 		margin: 0;
 	}

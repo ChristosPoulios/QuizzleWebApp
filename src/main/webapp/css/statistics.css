@@ -65,6 +65,15 @@
 	background: #f8f9fa;
 	border-radius: 5px;
 	border-left: 4px solid #007bff;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.session-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
 }
 
 .session-date {
@@ -75,6 +84,36 @@
 .session-score {
 	font-weight: bold;
 	color: #495057;
+}
+
+/* Progress bar styles for quiz sessions */
+.progress-bar {
+	width: 100%;
+	height: 8px;
+	background-color: #e9ecef;
+	border-radius: 4px;
+	overflow: hidden;
+	display: flex;
+	margin-top: 4px;
+}
+
+.progress-segment {
+	height: 100%;
+	transition: all 0.3s ease;
+}
+
+.progress-segment.correct {
+	background-color: #28a745;
+	background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+.progress-segment.incorrect {
+	background-color: #dc3545;
+	background: linear-gradient(90deg, #dc3545 0%, #fd7e14 100%);
+}
+
+.progress-segment:hover {
+	opacity: 0.8;
 }
 
 .theme-title {
@@ -96,7 +135,7 @@
 }
 
 /* Responsive adjustments for statistics page */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.stats-overview {
 		flex-direction: column;
 	}

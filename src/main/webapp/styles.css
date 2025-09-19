@@ -1,15 +1,20 @@
 /* Main Stylesheet for QuizzleWebApp */
-/* Import all modular CSS files */
 @import url('css/base.css');
+
 @import url('css/navigation.css');
+
 @import url('css/themes.css');
+
 @import url('css/questions.css');
+
 @import url('css/buttons.css');
+
 @import url('css/quiz.css');
+
 @import url('css/statistics.css');
 
 /* Responsive adjustments for all pages */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.tab-container {
 		position: relative;
 		width: 100%;
@@ -17,33 +22,27 @@
 		border-bottom: 2px solid #e0e0e0;
 		padding: 10px 0;
 	}
-	
 	.tabs {
 		flex-direction: row;
 		overflow-x: auto;
 		padding: 0 10px;
 	}
-	
 	.tab {
 		min-width: 120px;
 		flex-shrink: 0;
 	}
-	
 	body {
 		padding: 20px;
 	}
-	
 	.question-container {
 		flex-direction: column;
 		gap: 20px;
 		max-width: 100%;
 	}
-	
 	.container {
 		flex-direction: column;
 		gap: 15px;
 	}
-	
 	#neues-thema, #themen {
 		min-width: auto;
 	}

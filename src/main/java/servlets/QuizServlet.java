@@ -19,10 +19,10 @@ import quizlogic.dto.QuizSessionDTO;
 import quizlogic.dto.UserAnswerDTO;
 
 /**
- * Servlet implementation class QuizServlet
- * Handles quiz gameplay functionality in the web application.
+ * Servlet implementation class QuizServlet Handles quiz gameplay functionality
+ * in the web application.
  */
-@WebServlet("/quizServlet")
+@WebServlet("/quiz")
 public class QuizServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -32,6 +32,13 @@ public class QuizServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		HttpSession session = request.getSession();
+
+		if (session.getAttribute("currentSession") != null) {
+			saveCurrentQuizSession(session);
+		}
+
+		initializeNewQuizSession(session);
 		loadQuizData(request);
 		request.getRequestDispatcher("/quiz.jsp").forward(request, response);
 	}
@@ -64,14 +71,14 @@ public class QuizServlet extends HttpServlet {
 			session.setAttribute("msgType", "error");
 		}
 
-		loadQuizData(request);
+		loadQuizDataForPostRequest(request);
 		request.getRequestDispatcher("/quiz.jsp").forward(request, response);
 	}
 
 	private void handleSubmitAnswer(HttpServletRequest request, HttpSession session) {
-		String selectedAnswerId = request.getParameter("selectedAnswer");
-		
-		if (selectedAnswerId == null || selectedAnswerId.trim().isEmpty()) {
+		String selectedAnswerIds = request.getParameter("selectedAnswer");
+
+		if (selectedAnswerIds == null || selectedAnswerIds.trim().isEmpty()) {
 			session.setAttribute("msg", "Bitte wählen Sie eine Antwort aus!");
 			session.setAttribute("msgType", "error");
 			return;
@@ -81,46 +88,98 @@ public class QuizServlet extends HttpServlet {
 			DataManager dataManager = DataManager.getInstance();
 			QuestionDTO currentQuestion = (QuestionDTO) session.getAttribute("currentQuestion");
 			QuizSessionDTO currentSession = (QuizSessionDTO) session.getAttribute("currentSession");
-			
+
 			if (currentQuestion == null || currentSession == null) {
 				session.setAttribute("msg", "Keine aktive Quiz-Session gefunden!");
 				session.setAttribute("msgType", "error");
 				return;
 			}
 
-			// Finde die ausgewählte Antwort
-			AnswerDTO selectedAnswer = null;
-			ArrayList<AnswerDTO> answers = dataManager.getAnswersFor(currentQuestion);
-			for (AnswerDTO answer : answers) {
-				if (String.valueOf(answer.getId()).equals(selectedAnswerId)) {
-					selectedAnswer = answer;
-					break;
+			String[] answerIdArray = selectedAnswerIds.split(",");
+			ArrayList<AnswerDTO> allAnswers = dataManager.getAnswersFor(currentQuestion);
+			ArrayList<AnswerDTO> selectedAnswers = new ArrayList<>();
+			ArrayList<AnswerDTO> correctAnswers = new ArrayList<>();
+
+			for (AnswerDTO answer : allAnswers) {
+				if (answer.isCorrect()) {
+					correctAnswers.add(answer);
 				}
 			}
 
-			if (selectedAnswer != null) {
-				// Erstelle UserAnswer
-				UserAnswerDTO userAnswer = new UserAnswerDTO();
-				userAnswer.setQuestionId(currentQuestion.getId());
-				userAnswer.setSelectedAnswerId(selectedAnswer.getId());
-				userAnswer.setCorrect(selectedAnswer.isCorrect());
+			for (String answerIdStr : answerIdArray) {
+				for (AnswerDTO answer : allAnswers) {
+					if (String.valueOf(answer.getId()).equals(answerIdStr.trim())) {
+						selectedAnswers.add(answer);
+						break;
+					}
+				}
+			}
 
-				// Füge zur Session hinzu
+			if (!selectedAnswers.isEmpty()) {
+				boolean isCorrect = false;
+
+				if (correctAnswers.size() == 1) {
+					isCorrect = selectedAnswers.size() == 1 && selectedAnswers.get(0).isCorrect();
+				} else {
+					if (selectedAnswers.size() == correctAnswers.size()) {
+						isCorrect = true;
+						for (AnswerDTO selectedAnswer : selectedAnswers) {
+							if (!selectedAnswer.isCorrect()) {
+								isCorrect = false;
+								break;
+							}
+						}
+						if (isCorrect) {
+							for (AnswerDTO correctAnswer : correctAnswers) {
+								boolean found = false;
+								for (AnswerDTO selectedAnswer : selectedAnswers) {
+									if (selectedAnswer.getId() == correctAnswer.getId()) {
+										found = true;
+										break;
+									}
+								}
+								if (!found) {
+									isCorrect = false;
+									break;
+								}
+							}
+						}
+					}
+				}
+
 				if (currentSession.getUserAnswers() == null) {
 					currentSession.setUserAnswers(new ArrayList<>());
 				}
-				currentSession.getUserAnswers().add(userAnswer);
 
-				// Aktualisiere Score
+				for (AnswerDTO selectedAnswer : selectedAnswers) {
+					UserAnswerDTO userAnswer = new UserAnswerDTO();
+					userAnswer.setQuestionId(currentQuestion.getId());
+					userAnswer.setSelectedAnswerId(selectedAnswer.getId());
+					userAnswer.setCorrect(isCorrect);
+					currentSession.getUserAnswers().add(userAnswer);
+				}
+
 				int currentScore = (Integer) session.getAttribute("currentScore");
 				int questionsAnswered = (Integer) session.getAttribute("questionsAnswered");
-				
-				if (selectedAnswer.isCorrect()) {
+
+				if (isCorrect) {
 					currentScore++;
-					session.setAttribute("msg", "Richtig! Score: " + currentScore + "/" + (questionsAnswered + 1));
+					if (correctAnswers.size() == 1) {
+						session.setAttribute("msg", "Richtig! Score: " + currentScore + "/" + (questionsAnswered + 1));
+					} else {
+						session.setAttribute("msg",
+								"Richtig! Alle " + correctAnswers.size() + " richtigen Antworten gewählt. Score: "
+										+ currentScore + "/" + (questionsAnswered + 1));
+					}
 					session.setAttribute("msgType", "success");
 				} else {
-					session.setAttribute("msg", "Falsch! Die richtige Antwort war markiert. Score: " + currentScore + "/" + (questionsAnswered + 1));
+					if (correctAnswers.size() == 1) {
+						session.setAttribute("msg", "Falsch! Die richtige Antwort war markiert. Score: " + currentScore
+								+ "/" + (questionsAnswered + 1));
+					} else {
+						session.setAttribute("msg", "Falsch! Es gab " + correctAnswers.size()
+								+ " richtige Antworten. Score: " + currentScore + "/" + (questionsAnswered + 1));
+					}
 					session.setAttribute("msgType", "error");
 				}
 
@@ -139,16 +198,37 @@ public class QuizServlet extends HttpServlet {
 		try {
 			DataManager dataManager = DataManager.getInstance();
 			QuestionDTO currentQuestion = (QuestionDTO) session.getAttribute("currentQuestion");
-			
+
 			if (currentQuestion != null) {
 				ArrayList<AnswerDTO> answers = dataManager.getAnswersFor(currentQuestion);
+				ArrayList<AnswerDTO> correctAnswers = new ArrayList<>();
+
 				for (AnswerDTO answer : answers) {
 					if (answer.isCorrect()) {
-						session.setAttribute("msg", "Die richtige Antwort ist: " + answer.getAnswerText());
-						session.setAttribute("msgType", "info");
-						session.setAttribute("answerShown", true);
-						break;
+						correctAnswers.add(answer);
 					}
+				}
+
+				if (!correctAnswers.isEmpty()) {
+					if (correctAnswers.size() == 1) {
+						session.setAttribute("msg",
+								"Die richtige Antwort ist: " + correctAnswers.get(0).getAnswerText());
+					} else {
+						StringBuilder msgBuilder = new StringBuilder("Die richtigen Antworten sind: ");
+						for (int i = 0; i < correctAnswers.size(); i++) {
+							if (i > 0) {
+								if (i == correctAnswers.size() - 1) {
+									msgBuilder.append(" und ");
+								} else {
+									msgBuilder.append(", ");
+								}
+							}
+							msgBuilder.append(correctAnswers.get(i).getAnswerText());
+						}
+						session.setAttribute("msg", msgBuilder.toString());
+					}
+					session.setAttribute("msgType", "info");
+					session.setAttribute("answerShown", true);
 				}
 			}
 		} catch (Exception e) {
@@ -170,7 +250,9 @@ public class QuizServlet extends HttpServlet {
 
 	private void handleNewQuiz(HttpServletRequest request, HttpSession session) {
 		try {
-			// Session zurücksetzen
+
+			saveCurrentQuizSession(session);
+
 			session.removeAttribute("currentQuestion");
 			session.removeAttribute("currentSession");
 			session.removeAttribute("answerSubmitted");
@@ -178,10 +260,9 @@ public class QuizServlet extends HttpServlet {
 			session.setAttribute("currentScore", 0);
 			session.setAttribute("questionsAnswered", 0);
 
-			// Neue Session starten
 			QuizSessionDTO newSession = new QuizSessionDTO();
 			newSession.setTimestamp(new Date());
-			newSession.setUserId(1); // Default user
+			newSession.setUserId(1);
 			newSession.setUserAnswers(new ArrayList<>());
 			session.setAttribute("currentSession", newSession);
 
@@ -207,7 +288,7 @@ public class QuizServlet extends HttpServlet {
 			QuestionDTO nextQuestion = null;
 
 			if (selectedTheme != null && !selectedTheme.trim().isEmpty()) {
-				// Lade Frage für spezifisches Thema
+
 				ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 				for (ThemeDTO theme : themes) {
 					if (selectedTheme.equals(theme.getThemeTitle())) {
@@ -216,7 +297,7 @@ public class QuizServlet extends HttpServlet {
 					}
 				}
 			} else {
-				// Lade zufällige Frage
+
 				nextQuestion = dataManager.getRandomQuestion();
 			}
 
@@ -240,34 +321,81 @@ public class QuizServlet extends HttpServlet {
 		try {
 			DataManager dataManager = DataManager.getInstance();
 			HttpSession session = request.getSession();
-			
-			// Lade Themen
+
 			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
 			request.setAttribute("themes", themes);
 
-			// Initialisiere Session-Daten falls nicht vorhanden
-			if (session.getAttribute("currentScore") == null) {
-				session.setAttribute("currentScore", 0);
+			loadNextQuestion(request, session);
+
+			request.setAttribute("currentScore", session.getAttribute("currentScore"));
+			request.setAttribute("questionsAnswered", session.getAttribute("questionsAnswered"));
+			request.setAttribute("selectedTheme", session.getAttribute("selectedTheme"));
+
+		} catch (Exception e) {
+			HttpSession session = request.getSession();
+			session.setAttribute("msg", "Fehler beim Laden der Quiz-Daten: " + e.getMessage());
+			session.setAttribute("msgType", "error");
+		}
+	}
+
+	/**
+	 * Saves the current quiz session to persistent storage
+	 */
+	private void saveCurrentQuizSession(HttpSession session) {
+		try {
+			QuizSessionDTO currentSession = (QuizSessionDTO) session.getAttribute("currentSession");
+
+			if (currentSession != null && currentSession.getUserAnswers() != null
+					&& !currentSession.getUserAnswers().isEmpty()) {
+				DataManager dataManager = DataManager.getInstance();
+				String result = dataManager.saveQuizSession(currentSession);
+
+				if (result != null && !result.isEmpty()) {
+
+					System.out.println("Quiz session saved: " + result);
+				}
 			}
-			if (session.getAttribute("questionsAnswered") == null) {
-				session.setAttribute("questionsAnswered", 0);
-			}
-			if (session.getAttribute("currentSession") == null) {
-				QuizSessionDTO newSession = new QuizSessionDTO();
-				newSession.setTimestamp(new Date());
-				newSession.setUserId(1); // Default user
-				newSession.setUserAnswers(new ArrayList<>());
-				session.setAttribute("currentSession", newSession);
+		} catch (Exception e) {
+			System.err.println("Fehler beim Speichern der Quiz-Session: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * Initializes a new quiz session, resetting all relevant attributes in the
+	 * session.
+	 */
+	private void initializeNewQuizSession(HttpSession session) {
+		session.removeAttribute("currentQuestion");
+		session.removeAttribute("currentSession");
+		session.removeAttribute("answerSubmitted");
+		session.removeAttribute("answerShown");
+		session.setAttribute("currentScore", 0);
+		session.setAttribute("questionsAnswered", 0);
+
+		QuizSessionDTO newSession = new QuizSessionDTO();
+		newSession.setTimestamp(new Date());
+		newSession.setUserId(1);
+		newSession.setUserAnswers(new ArrayList<>());
+		session.setAttribute("currentSession", newSession);
+	}
+
+	/**
+	 * Loads quiz data for POST requests, preserving the session state and
+	 * attributes.
+	 */
+	private void loadQuizDataForPostRequest(HttpServletRequest request) {
+		try {
+			DataManager dataManager = DataManager.getInstance();
+			HttpSession session = request.getSession();
+
+			ArrayList<ThemeDTO> themes = dataManager.getAllThemes();
+			request.setAttribute("themes", themes);
+
+			QuestionDTO currentQuestion = (QuestionDTO) session.getAttribute("currentQuestion");
+			if (currentQuestion != null) {
+				request.setAttribute("currentQuestion", currentQuestion);
 			}
 
-			// Lade aktuelle Frage falls nicht vorhanden
-			if (session.getAttribute("currentQuestion") == null) {
-				loadNextQuestion(request, session);
-			} else {
-				request.setAttribute("currentQuestion", session.getAttribute("currentQuestion"));
-			}
-
-			// Setze Attribute für JSP
 			request.setAttribute("currentScore", session.getAttribute("currentScore"));
 			request.setAttribute("questionsAnswered", session.getAttribute("questionsAnswered"));
 			request.setAttribute("selectedTheme", session.getAttribute("selectedTheme"));

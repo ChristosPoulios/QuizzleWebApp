@@ -1,10 +1,9 @@
 /* Quiz-specific styles */
-
 #quiz-form {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	min-height: calc(100vh - 160px); 
+	min-height: calc(100vh - 160px);
 }
 
 .quiz-container {
@@ -13,7 +12,7 @@
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 20px;
-	flex: 1; 
+	flex: 1;
 }
 
 .quiz-container .left-section {
@@ -65,7 +64,6 @@
 	border-color: #007bff;
 }
 
-/* Styling für richtige und falsche Antworten */
 .answer-option.correct {
 	background: #d4edda;
 	border: 2px solid #28a745;
@@ -79,6 +77,10 @@
 }
 
 .answer-option input[type="radio"] {
+	margin-right: 10px;
+}
+
+.answer-option input[type="checkbox"] {
 	margin-right: 10px;
 }
 
@@ -184,23 +186,20 @@
 }
 
 /* Responsive adjustments for quiz page */
-@media (max-width: 768px) {
+@media ( max-width : 768px) {
 	.quiz-container {
 		flex-direction: column;
 		gap: 20px;
 		max-width: 100%;
 	}
-	
 	.left-section, .right-section {
 		min-width: auto;
 		max-width: none;
 	}
-	
 	.quiz-controls {
 		flex-direction: row;
 		flex-wrap: wrap;
 	}
-	
 	.quiz-controls button {
 		flex: 1;
 		min-width: 120px;

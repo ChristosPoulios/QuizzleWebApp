@@ -16,14 +16,13 @@
 	<!-- Navigation Tabs -->
 	<div class="tab-container">
 		<div class="tabs">
-			<a href="indexServlet" class="tab">Quizthemen</a> <a
-				href="questionServlet" class="tab active">Quizfragen</a> <a
-				href="quizServlet" class="tab">Quiz</a> <a href="statisticsServlet" class="tab">Statistik</a>
+			<a href="index" class="tab">Home</a> <a href="theme" class="tab">Quizthemen</a>
+			<a href="question" class="tab active">Quizfragen</a> <a href="quiz"
+				class="tab">Quiz</a> <a href="statistics" class="tab">Statistik</a>
 		</div>
 	</div>
 
-	<form id="question-form" method="post" action="questionServlet"
-		novalidate>
+	<form id="question-form" method="post" action="question" novalidate>
 		<input type="hidden" name="action" value="save" id="actionInput" /> <input
 			type="hidden" name="selectedQuestion" value=""
 			id="selectedQuestionInput" />
@@ -110,7 +109,8 @@
 
 					<!-- Fragenliste -->
 					<div id="questions-view">
-						<select id="questions-liste" size="10" onchange="loadSelectedQuestion()">
+						<select id="questions-liste" size="10"
+							onchange="loadSelectedQuestion()">
 							<%
 							ArrayList<QuestionDTO> questions = (ArrayList<QuestionDTO>) request.getAttribute("questions");
 							String selectedQuestionTitle = (String) request.getAttribute("selectedQuestionTitle");
@@ -118,11 +118,12 @@
 								for (QuestionDTO question : questions) {
 									boolean isSelected = selectedQuestionTitle != null && selectedQuestionTitle.equals(question.getQuestionTitle());
 							%>
-							<option value="<%=question.getQuestionTitle()%>" <%=isSelected ? "selected" : ""%>>
+							<option value="<%=question.getQuestionTitle()%>"
+								<%=isSelected ? "selected" : ""%>>
 								<%=question.getQuestionTitle()%>
 							</option>
 							<%
-								}
+							}
 							} else {
 							%>
 							<option disabled>Keine Fragen für dieses Thema vorhanden</option>
@@ -134,7 +135,8 @@
 
 					<!-- Themenliste (initial versteckt) -->
 					<div id="themes-view" style="display: none;">
-						<select id="themes-liste" size="10" onchange="selectSelectedTheme()">
+						<select id="themes-liste" size="10"
+							onchange="selectSelectedTheme()">
 							<%
 							if (themes != null && !themes.isEmpty()) {
 								for (ThemeDTO theme : themes) {
@@ -143,14 +145,14 @@
 								<%=theme.getThemeTitle()%>
 								<%
 								if (theme.getThemeDescription() != null && !theme.getThemeDescription().trim().isEmpty()) {
-								%>
-								- <%=theme.getThemeDescription()%>
+								%> -
+								<%=theme.getThemeDescription()%>
 								<%
 								}
 								%>
 							</option>
 							<%
-								}
+							}
 							} else {
 							%>
 							<option disabled>Keine Themen vorhanden</option>
@@ -204,14 +206,14 @@
 		}
 
 		function deleteQuestion() {
-			// Prüfe, ob eine Frage im Titel-Feld steht (bedeutet eine Frage ist geladen)
 			var currentTitle = document.getElementById('titel').value;
 			if (!currentTitle || currentTitle.trim() === '') {
 				alert('Bitte wählen Sie zuerst eine Frage aus der Liste aus.');
 				return;
 			}
-			
-			if (confirm('Sind Sie sicher, dass Sie die Frage "' + currentTitle + '" löschen möchten?')) {
+
+			if (confirm('Sind Sie sicher, dass Sie die Frage "' + currentTitle
+					+ '" löschen möchten?')) {
 				document.getElementById('actionInput').value = 'delete';
 				document.querySelector('input[name="selectedQuestion"]').value = currentTitle;
 				document.getElementById('question-form').submit();

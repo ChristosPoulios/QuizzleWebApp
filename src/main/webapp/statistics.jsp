@@ -16,16 +16,15 @@
 	<!-- Navigation Tabs -->
 	<div class="tab-container">
 		<div class="tabs">
-			<a href="indexServlet" class="tab">Quizthemen</a>
-			<a href="questionServlet" class="tab">Quizfragen</a>
-			<a href="quizServlet" class="tab">Quiz</a>
-			<a href="statisticsServlet" class="tab active">Statistik</a>
+			<a href="index" class="tab">Home</a> <a href="theme" class="tab">Quizthemen</a>
+			<a href="question" class="tab">Quizfragen</a> <a href="quiz"
+				class="tab">Quiz</a> <a href="statistics" class="tab active">Statistik</a>
 		</div>
 	</div>
 
 	<div class="statistics-container">
 
-		
+
 		<!-- Übersichts-Statistiken -->
 		<div class="stats-overview">
 			<div class="stats-card">
@@ -60,14 +59,25 @@
 								}
 							}
 						}
+						int incorrectAnswers = totalAnswers - correctAnswers;
 						double percentage = totalAnswers > 0 ? (correctAnswers * 100.0 / totalAnswers) : 0;
+						double correctPercentage = totalAnswers > 0 ? (correctAnswers * 100.0 / totalAnswers) : 0;
+						double incorrectPercentage = totalAnswers > 0 ? (incorrectAnswers * 100.0 / totalAnswers) : 0;
 				%>
 					<div class="session-item">
-						<div class="session-date"><%=dateFormat.format(quizSession.getTimestamp())%></div>
-						<div class="session-score">
-							<%=correctAnswers%>/<%=totalAnswers%> 
-							(<%=String.format("%.1f", percentage)%>%)
+						<div class="session-info">
+							<div class="session-date"><%=dateFormat.format(quizSession.getTimestamp())%></div>
+							<div class="session-score">
+								<%=correctAnswers%>/<%=totalAnswers%> 
+								(<%=String.format("%.1f", percentage)%>%)
+							</div>
 						</div>
+						<% if (totalAnswers > 0) { %>
+							<div class="progress-bar">
+								<div class="progress-segment correct" style="width: <%=correctPercentage%>%" title="<%=correctAnswers%> richtige Antworten"></div>
+								<div class="progress-segment incorrect" style="width: <%=incorrectPercentage%>%" title="<%=incorrectAnswers%> falsche Antworten"></div>
+							</div>
+						<% } %>
 					</div>
 				<%
 					}
@@ -89,24 +99,24 @@
 				if (themes != null && !themes.isEmpty()) {
 					for (ThemeDTO theme : themes) {
 				%>
-					<div class="theme-item">
-						<div class="theme-title"><%=theme.getThemeTitle()%></div>
-						<div class="theme-description">
-							<%=theme.getThemeDescription() != null ? theme.getThemeDescription() : "Keine Beschreibung"%>
-						</div>
+				<div class="theme-item">
+					<div class="theme-title"><%=theme.getThemeTitle()%></div>
+					<div class="theme-description">
+						<%=theme.getThemeDescription() != null ? theme.getThemeDescription() : "Keine Beschreibung"%>
 					</div>
+				</div>
 				<%
-					}
+				}
 				} else {
 				%>
-					<div class="no-themes">Keine Themen vorhanden</div>
+				<div class="no-themes">Keine Themen vorhanden</div>
 				<%
 				}
 				%>
 			</div>
 		</div>
 
-		<!-- Message Area moved below themes overview -->
+		<!-- Message Area -->
 		<div id="message-area" aria-live="polite" role="status"
 			<%String msgType = (String) session.getAttribute("msgType");%>
 			<%=msgType != null ? "class=\"" + msgType + "\"" : ""%>>
